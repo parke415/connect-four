@@ -1,6 +1,6 @@
 // application constants
-const GRID_COLUMNS = 7;
-const GRID_ROWS = 6;
+const COLUMNS = 7;
+const ROWS = 6;
 
 // application state variables
 let grid = [];
@@ -21,17 +21,16 @@ resetGrid();
 // function declarations
 
 function plotClick(event) {
-  let coordinate = event.target.id.split('_');
-  let x = parseInt(coordinate[0]);
-  let y = parseInt(coordinate[1]);
+  let x = parseInt(event.target.id.charAt(1));
+  let y = parseInt(event.target.id.charAt(3));
   if (end || event.target.id === "frame" || y !== dropRow(x)) return;
-  turn ? grid[x][dropRow(x)] += 1 : grid[x][dropRow(x)] -= 1;
-  turn ? event.target.style.backgroundColor = '#00bbbb' :
-    event.target.style.backgroundColor = '#bb0000';
+  grid[x][dropRow(x)] = turn ? 1 : -1;
+  event.target.style.backgroundColor = turn ? '#00bbbb' : '#bb0000';
   event.target.style.border = '1px solid black';
   turn = !turn;
-  highlightDrop();
   checkGrid();
+  dropRings();
+  console.log(grid);
 }
 
 function checkGrid() {
@@ -45,18 +44,17 @@ function checkGrid() {
   return;
 }
 
-function highlightDrop() {
-  for (let x = 0; x < GRID_COLUMNS; x++) {
-    if (dropRow(x) !== "full") {
-      turn ? cells[x+(dropRow(x)*GRID_COLUMNS)].style.border = '5px solid #00bbbb' :
-        cells[x+(dropRow(x)*GRID_COLUMNS)].style.border = '5px solid #bb0000';
+function dropRings() {
+  for (let x = 0; x < COLUMNS; x++) {
+    if (!end && dropRow(x) !== "full") {
+      // cells[(ROWS*COLUMNS-1)-(x+(dropRow(x)*COLUMNS))].style.border = turn ? '5px solid #00bbbb' : '5px solid #bb0000';
+      document.getElementById(`x${x}y${dropRow(x)}`).style.border = turn ? '5px solid #00bbbb' : '5px solid #bb0000';
     }
   }
-  return;
 }
 
 function dropRow(x) {
-  for (let y = GRID_ROWS - 1; y >= 0; y--) {
+  for (let y = 0; y < ROWS; y++) {
     if (grid[x][y] === 0) {
       return y;
     }
@@ -65,8 +63,8 @@ function dropRow(x) {
 }
 
 function fullGrid() {
-  for (let x = 0; x < GRID_COLUMNS; x++) {
-    if (grid[x][0] === 0) {
+  for (let x = 0; x < COLUMNS; x++) {
+    if (grid[x][ROWS-1] === 0) {
       return false;
     }
   }
@@ -74,9 +72,9 @@ function fullGrid() {
 }
 
 function resetGrid() {
-  for (let x = 0; x < GRID_COLUMNS; x++) {
+  for (let x = 0; x < COLUMNS; x++) {
     grid[x] = [];
-    for (let y = 0; y < GRID_ROWS; y++) {
+    for (let y = 0; y < ROWS; y++) {
       grid[x][y] = 0;
     }
   }
@@ -85,7 +83,7 @@ function resetGrid() {
     cell.style.border = '1px solid black';
   });
   turn = true;
-  highlightDrop();
+  dropRings();
   end = false;
   msg.innerHTML = "<span id='teal'>TEAL</span> versus <span id='red'>RED</span>";
 }
