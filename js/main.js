@@ -55,7 +55,8 @@ function dropRings() {
 function checkGrid() {
   checkVertical();
   checkHorizontal();
-  // checkDiagonal();
+  checkDiagonalZ();
+  // checkDiagonalS();
   if (fullGrid() && !end) {
     end = true;
     msg.textContent = "TIED GAME";
@@ -66,8 +67,9 @@ function checkGrid() {
 
 function checkVertical() {
   let player = turn ? 1 : -1;
-  let spree = 0;
+  let spree;
   for (let x = 0; x < COLUMNS; x++) {
+    spree = 0;
     for (let y = 0; y < ROWS; y++) {
       if (grid[x][y] === player) {
         spree++;
@@ -87,8 +89,9 @@ function checkVertical() {
 
 function checkHorizontal() {
   let player = turn ? 1 : -1;
-  let spree = 0;
+  let spree;
   for (let y = 0; y < ROWS; y++) {
+    spree = 0;
     for (let x = 0; x < COLUMNS; x++) {
       if (grid[x][y] === player) {
         spree++;
@@ -106,8 +109,62 @@ function checkHorizontal() {
   return;
 }
 
-// function checkDiagonal() {
+function checkDiagonalZ() {
+  let player = turn ? 1 : -1;
+  let spree1;
+  let spree2;
+  for (let offset = 0; offset < ROWS; offset++) {
+    spree1 = 0;
+    spree2 = 0;
+    for (let z = 0; z < (ROWS-offset); z++) {
+      if (grid[z][z+offset] === player) {
+        spree1++;
+      } else {
+        spree1 = 0;
+      }
+      if (grid[(z+1)+offset][z] === player) {
+        spree2++;
+      } else {
+        spree2 = 0;
+      }
+      if (spree1 === 4 || spree2 === 4) {
+        end = true;
+        msg.innerHTML = turn ? `<span id="teal">TEAL</span> WINS!` : `<span id="red">RED</span> WINS!`;
+        cells.forEach(cell => cell.style.border = "1px solid black");
+        return;
+      }
+    }
+  }
+  return;
+}
 
+// function checkDiagonalS() {
+//   let player = turn ? 1 : -1;
+//   let spree1;
+//   let spree2;
+//   for (let offset = 0; offset < ROWS; offset++) {
+//     spree1 = 0;
+//     spree2 = 0;
+//     for (let z = 0; z < (ROWS-offset); z++) {
+//       if (grid[z][z+offset] === player) {
+//         spree1++;
+//       } else {
+//         spree1 = 0;
+//       }
+//       if (grid[(z+1)+offset][z] === player) {
+//         spree2++;
+//       } else {
+//         spree2 = 0;
+//       }
+//       if (spree1 === 4 || spree2 === 4) {
+//         end = true;
+//         msg.innerHTML = turn ? `<span id="teal">TEAL</span> WINS!` : `<span id="red">RED</span> WINS!`;
+//         cells.forEach(cell => cell.style.border = "1px solid black");
+//         return;
+//       }
+//     }
+//   }
+//   return;
 // }
 
 function fullGrid() {
