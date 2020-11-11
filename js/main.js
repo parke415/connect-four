@@ -1,4 +1,5 @@
 // application constants
+const COORDINATES = 42;
 const COLUMNS = 7;
 const ROWS = 6;
 
@@ -20,6 +21,43 @@ resetGrid();
 
 // function declarations
 
+function resetGrid() {
+  for (let x = 0; x < COLUMNS; x++) {
+    grid[x] = [];
+    for (let y = 0; y < ROWS; y++) {
+      grid[x][y] = 0;
+    }
+  }
+  cells.forEach(cell => {
+    cell.style.backgroundColor = "#ffffff";
+    cells.forEach(cell => cell.style.border = "1px solid black");
+  });
+  turn = true;
+  end = false;
+  msg.innerHTML = `<span id="teal">TEAL</span> versus <span id="red">RED</span>`;
+  dropRings();
+}
+
+function dropRings() {
+  for (let x = 0; x < COLUMNS; x++) {
+    if (!end && dropRow(x) !== "full") {
+      // 2D manipulation of 1D array (cached DOM elements):
+      cells[(COORDINATES-1)-(((COLUMNS-1)-x)+(dropRow(x)*COLUMNS))].style.border = turn ? "5px solid #00bbbb" : "5px solid #bb0000";
+      // direct DOM access:
+      // document.getElementById(`x${x}y${dropRow(x)}`).style.border = turn ? "5px solid #00bbbb" : "5px solid #bb0000";
+    }
+  }
+}
+
+function dropRow(x) {
+  for (let y = 0; y < ROWS; y++) {
+    if (grid[x][y] === 0) {
+      return y;
+    }
+  }
+  return "full";
+}
+
 function plotClick(event) {
   let x = parseInt(event.target.id.charAt(1));
   let y = parseInt(event.target.id.charAt(3));
@@ -34,29 +72,10 @@ function plotClick(event) {
   }
 }
 
-function dropRow(x) {
-  for (let y = 0; y < ROWS; y++) {
-    if (grid[x][y] === 0) {
-      return y;
-    }
-  }
-  return "full";
-}
-
-function dropRings() {
-  for (let x = 0; x < COLUMNS; x++) {
-    if (!end && dropRow(x) !== "full") {
-      // cells[(COLUMNS*ROWS-1)-(x+(dropRow(x)*COLUMNS))].style.border = turn ? "5px solid #00bbbb" : "5px solid #bb0000";
-      document.getElementById(`x${x}y${dropRow(x)}`).style.border = turn ? "5px solid #00bbbb" : "5px solid #bb0000";
-    }
-  }
-}
-
 function checkGrid() {
   checkVertical();
   checkHorizontal();
-  checkDiagonalZ();
-  // checkDiagonalS();
+  checkDiagonal();
   if (fullGrid() && !end) {
     end = true;
     msg.textContent = "TIED GAME";
@@ -109,13 +128,17 @@ function checkHorizontal() {
   return;
 }
 
-function checkDiagonalZ() {
+function checkDiagonal() {
   let player = turn ? 1 : -1;
   let spree1;
   let spree2;
+  let spree3;
+  let spree4;
   for (let offset = 0; offset < ROWS; offset++) {
     spree1 = 0;
     spree2 = 0;
+    spree3 = 0;
+    spree4 = 0;
     for (let z = 0; z < (ROWS-offset); z++) {
       if (grid[z][z+offset] === player) {
         spree1++;
@@ -127,7 +150,17 @@ function checkDiagonalZ() {
       } else {
         spree2 = 0;
       }
-      if (spree1 === 4 || spree2 === 4) {
+      if (grid[(COLUMNS-1)-z][z+offset] === player) {
+        spree3++;
+      } else {
+        spree3 = 0;
+      }
+      if (grid[(COLUMNS-2)-z-offset][z] === player) {
+        spree4++;
+      } else {
+        spree4 = 0;
+      }
+      if (spree1 === 4 || spree2 === 4 || spree3 === 4 || spree4 === 4) {
         end = true;
         msg.innerHTML = turn ? `<span id="teal">TEAL</span> WINS!` : `<span id="red">RED</span> WINS!`;
         cells.forEach(cell => cell.style.border = "1px solid black");
@@ -138,35 +171,6 @@ function checkDiagonalZ() {
   return;
 }
 
-// function checkDiagonalS() {
-//   let player = turn ? 1 : -1;
-//   let spree1;
-//   let spree2;
-//   for (let offset = 0; offset < ROWS; offset++) {
-//     spree1 = 0;
-//     spree2 = 0;
-//     for (let z = 0; z < (ROWS-offset); z++) {
-//       if (grid[z][z+offset] === player) {
-//         spree1++;
-//       } else {
-//         spree1 = 0;
-//       }
-//       if (grid[(z+1)+offset][z] === player) {
-//         spree2++;
-//       } else {
-//         spree2 = 0;
-//       }
-//       if (spree1 === 4 || spree2 === 4) {
-//         end = true;
-//         msg.innerHTML = turn ? `<span id="teal">TEAL</span> WINS!` : `<span id="red">RED</span> WINS!`;
-//         cells.forEach(cell => cell.style.border = "1px solid black");
-//         return;
-//       }
-//     }
-//   }
-//   return;
-// }
-
 function fullGrid() {
   for (let x = 0; x < COLUMNS; x++) {
     if (grid[x][ROWS-1] === 0) {
@@ -174,21 +178,4 @@ function fullGrid() {
     }
   }
   return true;
-}
-
-function resetGrid() {
-  for (let x = 0; x < COLUMNS; x++) {
-    grid[x] = [];
-    for (let y = 0; y < ROWS; y++) {
-      grid[x][y] = 0;
-    }
-  }
-  cells.forEach(cell => {
-    cell.style.backgroundColor = "#ffffff";
-    cells.forEach(cell => cell.style.border = "1px solid black");
-  });
-  turn = true;
-  end = false;
-  msg.innerHTML = `<span id="teal">TEAL</span> versus <span id="red">RED</span>`;
-  dropRings();
 }
