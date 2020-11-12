@@ -41,10 +41,7 @@ function resetGrid() {
 function dropRings() {
   for (let x = 0; x < COLUMNS; x++) {
     if (!end && dropRow(x) !== "full") {
-      // 2D manipulation of 1D array (cached DOM elements):
       cells[(COORDINATES-1)-(((COLUMNS-1)-x)+(dropRow(x)*COLUMNS))].style.border = turn ? "5px solid #00bbbb" : "5px solid #bb0000";
-      // direct DOM access:
-      // document.getElementById(`x${x}y${dropRow(x)}`).style.border = turn ? "5px solid #00bbbb" : "5px solid #bb0000";
     }
   }
 }
@@ -87,19 +84,26 @@ function checkGrid() {
 function checkVertical() {
   let player = turn ? 1 : -1;
   let spree;
+  let spreeCache;
   for (let x = 0; x < COLUMNS; x++) {
     spree = 0;
+    spreeCache = [];
     for (let y = 0; y < ROWS; y++) {
       if (grid[x][y] === player) {
         spree++;
+        spreeCache.push([x, y]);
         if (spree === 4) {
           end = true;
           msg.innerHTML = turn ? `<span id="teal">TEAL</span> WINS!` : `<span id="red">RED</span> WINS!`;
           cells.forEach(cell => cell.style.border = "1px solid black");
+          for (let i = 0; i < 4; i++) {
+            document.getElementById(`x${spreeCache[i][0]}y${spreeCache[i][1]}`).style.backgroundColor = turn ? "#00ffff" : "#ff0000";
+          }
           return;
         }
       } else {
         spree = 0;
+        spreeCache = [];
       }
     }
   }
@@ -109,19 +113,26 @@ function checkVertical() {
 function checkHorizontal() {
   let player = turn ? 1 : -1;
   let spree;
+  let spreeCache;
   for (let y = 0; y < ROWS; y++) {
     spree = 0;
+    spreeCache = [];
     for (let x = 0; x < COLUMNS; x++) {
       if (grid[x][y] === player) {
         spree++;
+        spreeCache.push([x, y]);
         if (spree === 4) {
           end = true;
           msg.innerHTML = turn ? `<span id="teal">TEAL</span> WINS!` : `<span id="red">RED</span> WINS!`;
           cells.forEach(cell => cell.style.border = "1px solid black");
+          for (let i = 0; i < 4; i++) {
+            document.getElementById(`x${spreeCache[i][0]}y${spreeCache[i][1]}`).style.backgroundColor = turn ? "#00ffff" : "#ff0000";
+          }
           return;
         }
       } else {
         spree = 0;
+        spreeCache = [];
       }
     }
   }
@@ -130,40 +141,62 @@ function checkHorizontal() {
 
 function checkDiagonal() {
   let player = turn ? 1 : -1;
-  let spree1;
-  let spree2;
-  let spree3;
-  let spree4;
+  let spreeNW;
+  let spreeSE;
+  let spreeNE;
+  let spreeSW;
+  let spreeCacheNW;
+  let spreeCacheSE;
+  let spreeCacheNE;
+  let spreeCacheSW;
   for (let offset = 0; offset < ROWS; offset++) {
-    spree1 = 0;
-    spree2 = 0;
-    spree3 = 0;
-    spree4 = 0;
+    spreeNW = 0;
+    spreeSE = 0;
+    spreeNE = 0;
+    spreeSW = 0;
+    spreeCacheNW = [];
+    spreeCacheSE = [];
+    spreeCacheNE = [];
+    spreeCacheSW = [];
     for (let z = 0; z < (ROWS-offset); z++) {
       if (grid[z][z+offset] === player) {
-        spree1++;
+        spreeNW++;
+        spreeCacheNW.push([z, z+offset]);
       } else {
-        spree1 = 0;
+        spreeNW = 0;
+        spreeCacheNW = [];
       }
       if (grid[(z+1)+offset][z] === player) {
-        spree2++;
+        spreeSE++;
+        spreeCacheSE.push([(z+1)+offset, z]);
       } else {
-        spree2 = 0;
+        spreeSE = 0;
+        spreeCacheSE = [];
       }
       if (grid[(COLUMNS-1)-z][z+offset] === player) {
-        spree3++;
+        spreeNE++;
+        spreeCacheNE.push([(COLUMNS-1)-z, z+offset]);
       } else {
-        spree3 = 0;
+        spreeNE = 0;
+        spreeCacheNE = [];
       }
       if (grid[(COLUMNS-2)-z-offset][z] === player) {
-        spree4++;
+        spreeSW++;
+        spreeCacheSW.push([(COLUMNS-2)-z-offset, z]);
       } else {
-        spree4 = 0;
+        spreeSW = 0;
+        spreeCacheSW = [];
       }
-      if (spree1 === 4 || spree2 === 4 || spree3 === 4 || spree4 === 4) {
+      if (spreeNW === 4 || spreeSE === 4 || spreeNE === 4 || spreeSW === 4) {
         end = true;
         msg.innerHTML = turn ? `<span id="teal">TEAL</span> WINS!` : `<span id="red">RED</span> WINS!`;
         cells.forEach(cell => cell.style.border = "1px solid black");
+        for (let i = 0; i < 4; i++) {
+          if (spreeNW === 4) document.getElementById(`x${spreeCacheNW[i][0]}y${spreeCacheNW[i][1]}`).style.backgroundColor = turn ? "#00ffff" : "#ff0000";
+          if (spreeSE === 4) document.getElementById(`x${spreeCacheSE[i][0]}y${spreeCacheSE[i][1]}`).style.backgroundColor = turn ? "#00ffff" : "#ff0000";
+          if (spreeNE === 4) document.getElementById(`x${spreeCacheNE[i][0]}y${spreeCacheNE[i][1]}`).style.backgroundColor = turn ? "#00ffff" : "#ff0000";
+          if (spreeSW === 4) document.getElementById(`x${spreeCacheSW[i][0]}y${spreeCacheSW[i][1]}`).style.backgroundColor = turn ? "#00ffff" : "#ff0000";
+        }
         return;
       }
     }
