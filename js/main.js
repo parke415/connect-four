@@ -97,7 +97,7 @@ function checkVertical() {
           msg.innerHTML = turn ? `<span id="teal">TEAL</span> WINS!` : `<span id="red">RED</span> WINS!`;
           cells.forEach(cell => cell.style.border = "1px solid black");
           for (let i = 0; i < 4; i++) {
-            document.getElementById(`x${spreeCache[i][0]}y${spreeCache[i][1]}`).style.backgroundColor = turn ? "#00ffff" : "#ff0000";
+            cells[(COORDINATES-1)-(((COLUMNS-1)-spreeCache[i][0])+(spreeCache[i][1]*COLUMNS))].style.backgroundColor = turn ? "#00ffff" : "#ff0000";
           }
           return;
         }
@@ -126,7 +126,7 @@ function checkHorizontal() {
           msg.innerHTML = turn ? `<span id="teal">TEAL</span> WINS!` : `<span id="red">RED</span> WINS!`;
           cells.forEach(cell => cell.style.border = "1px solid black");
           for (let i = 0; i < 4; i++) {
-            document.getElementById(`x${spreeCache[i][0]}y${spreeCache[i][1]}`).style.backgroundColor = turn ? "#00ffff" : "#ff0000";
+            cells[(COORDINATES-1)-(((COLUMNS-1)-spreeCache[i][0])+(spreeCache[i][1]*COLUMNS))].style.backgroundColor = turn ? "#00ffff" : "#ff0000";
           }
           return;
         }
@@ -192,10 +192,10 @@ function checkDiagonal() {
         msg.innerHTML = turn ? `<span id="teal">TEAL</span> WINS!` : `<span id="red">RED</span> WINS!`;
         cells.forEach(cell => cell.style.border = "1px solid black");
         for (let i = 0; i < 4; i++) {
-          if (spreeNW === 4) document.getElementById(`x${spreeCacheNW[i][0]}y${spreeCacheNW[i][1]}`).style.backgroundColor = turn ? "#00ffff" : "#ff0000";
-          if (spreeSE === 4) document.getElementById(`x${spreeCacheSE[i][0]}y${spreeCacheSE[i][1]}`).style.backgroundColor = turn ? "#00ffff" : "#ff0000";
-          if (spreeNE === 4) document.getElementById(`x${spreeCacheNE[i][0]}y${spreeCacheNE[i][1]}`).style.backgroundColor = turn ? "#00ffff" : "#ff0000";
-          if (spreeSW === 4) document.getElementById(`x${spreeCacheSW[i][0]}y${spreeCacheSW[i][1]}`).style.backgroundColor = turn ? "#00ffff" : "#ff0000";
+          if (spreeNW === 4) cells[(COORDINATES-1)-(((COLUMNS-1)-spreeCacheNW[i][0])+(spreeCacheNW[i][1]*COLUMNS))].style.backgroundColor = turn ? "#00ffff" : "#ff0000";
+          if (spreeSE === 4) cells[(COORDINATES-1)-(((COLUMNS-1)-spreeCacheSE[i][0])+(spreeCacheSE[i][1]*COLUMNS))].style.backgroundColor = turn ? "#00ffff" : "#ff0000";
+          if (spreeNE === 4) cells[(COORDINATES-1)-(((COLUMNS-1)-spreeCacheNE[i][0])+(spreeCacheNE[i][1]*COLUMNS))].style.backgroundColor = turn ? "#00ffff" : "#ff0000";
+          if (spreeSW === 4) cells[(COORDINATES-1)-(((COLUMNS-1)-spreeCacheSW[i][0])+(spreeCacheSW[i][1]*COLUMNS))].style.backgroundColor = turn ? "#00ffff" : "#ff0000";
         }
         return;
       }
